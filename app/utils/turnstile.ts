@@ -1,5 +1,5 @@
 /**
- * Cloudflare Turnstile Server Verification Utility
+ * Cloudflare Turnstile Server Verification Utility (Production)
  */
 export async function verifyTurnstileToken(
   token: string | undefined | null,
@@ -17,17 +17,9 @@ export async function verifyTurnstileToken(
 
   const trimmedToken = token.trim();
 
-  // Allow developer bypass token in local development
-  if (process.env.NODE_ENV === "development" && trimmedToken === "dev-local-token") {
-    return { success: true };
-  }
-
-  // Cloudflare official test secret key that always passes (32 zeros + AA)
-  const TEST_SECRET_KEY = "1x0000000000000000000000000000000AA";
-
-  async function checkWithCloudflare(secret: string) {
+  try {
     const formData = new URLSearchParams();
-    formData.append("secret", secret);
+    formData.append("secret", secretKey);
     formData.append("response", trimmedToken);
     if (remoteIp) {
       formData.append("remoteip", remoteIp);
@@ -42,7 +34,10 @@ export async function verifyTurnstileToken(
     });
 
     if (!res.ok) {
-      return { ok: false, status: res.status, data: null };
+      return {
+        success: false,
+        error: `Cloudflare verification failed with status ${res.status}.`,
+      };
     }
 
     const data = (await res.json()) as {
@@ -52,36 +47,24 @@ export async function verifyTurnstileToken(
       hostname?: string;
     };
 
-    return { ok: true, status: res.status, data };
-  }
-
-  try {
-    // 1. Primary check with configured production secret key
-    const primaryRes = await checkWithCloudflare(secretKey);
-
-    if (primaryRes.ok && primaryRes.data?.success) {
-      return { success: true };
+    if (!data.success) {
+      return {
+        success: false,
+        error: "Security verification failed. Please complete the Cloudflare check again.",
+        errorCodes: data["error-codes"] || [],
+      };
     }
 
-    // 2. If primary verification failed (e.g. token was created on localhost using Cloudflare's test key),
-    // verify with Cloudflare's official testing secret key to confirm authenticity
-    const testRes = await checkWithCloudflare(TEST_SECRET_KEY);
-    if (testRes.ok && testRes.data?.success) {
-      return { success: true };
-    }
-
-    return {
-      success: false,
-      error: "Security check failed. Please verify the Cloudflare challenge and try again.",
-      errorCodes: primaryRes.data?.["error-codes"] || testRes.data?.["error-codes"] || [],
-    };
+    return { success: true };
   } catch (err: unknown) {
     console.error("Error during Turnstile verification:", err);
-    const errorMessage = err instanceof Error ? err.message : "Internal error during Turnstile verification.";
+    const errorMessage =
+      err instanceof Error ? err.message : "Internal error during Turnstile verification.";
     return {
       success: false,
       error: errorMessage,
     };
   }
 }
+
 
