@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { HistoricalResult, Prediction } from "../types";
 import { computePrediction, formatPeriodId, getNumberCategory, getNumberColor } from "../utils/wingoEngine";
 import { Icon } from "./Icons";
@@ -101,7 +102,11 @@ export default function Wingo30sTool({
     };
   }, []);
 
+  const isFetchingRef = useRef(false);
+
   const fetchLiveHistory = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       const res = await fetch("/api/wingo/history?mode=30s", { cache: "no-store" });
       if (!res.ok) return;
@@ -112,8 +117,10 @@ export default function Wingo30sTool({
           onAddResult(data.list[0]);
         }
       }
-    } catch (e) {
-      console.warn("Live 30s fetch error:", e);
+    } catch {
+      // Graceful fallback to existing state if offline or during reload
+    } finally {
+      isFetchingRef.current = false;
     }
   }, [onAddResult]);
 
@@ -291,7 +298,7 @@ export default function Wingo30sTool({
           <div className="draw-id-row">
             <span className="draw-id-label">Draw ID</span>
             <div className="draw-id-value-wrap">
-              <span className="draw-id-code" title={periodId}>{displayDrawId}</span>
+              <span className="draw-id-code" suppressHydrationWarning title={periodId}>{displayDrawId}</span>
               <button
                 type="button"
                 onClick={handleCopyDrawId}
@@ -561,8 +568,8 @@ export default function Wingo30sTool({
           </div>
 
           <div className="guide-links-deck">
-            <a
-              href="#wingo-1m"
+            <Link
+              href="/wingo-1-minute-prediction"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigateToTool?.("wingo-1m");
@@ -577,10 +584,10 @@ export default function Wingo30sTool({
                 <span className="pill-name">WinGo 1-Minute Model</span>
                 <span className="pill-meta">Lower variance, macro trend smoothing</span>
               </div>
-            </a>
+            </Link>
 
-            <a
-              href="#pattern-radar"
+            <Link
+              href="/wingo-pattern-radar"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigateToTool?.("pattern-radar");
@@ -595,10 +602,10 @@ export default function Wingo30sTool({
                 <span className="pill-name">Bead Road Pattern Radar</span>
                 <span className="pill-meta">Visual streak analysis &amp; cluster detection</span>
               </div>
-            </a>
+            </Link>
 
-            <a
-              href="#calculator"
+            <Link
+              href="/wingo-calculator"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigateToTool?.("calculator");
@@ -613,7 +620,7 @@ export default function Wingo30sTool({
                 <span className="pill-name">Risk Stage Calculator</span>
                 <span className="pill-meta">Calculate optimal 8-stage capital staging</span>
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

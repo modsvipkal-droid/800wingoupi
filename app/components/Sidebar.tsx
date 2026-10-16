@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
+import Link from "next/link";
 import { ActiveTool } from "../types";
 import { Icon, IconName } from "./Icons";
 
@@ -19,6 +20,7 @@ interface NavItem {
   badge?: string;
   badgeColor?: "green" | "gold" | "blue" | "purple";
   iconName: IconName;
+  href: string;
 }
 
 interface NavSection {
@@ -28,23 +30,29 @@ interface NavSection {
 
 const navSections: NavSection[] = [
   {
+    title: "PLATFORM",
+    items: [
+      { id: "landing", label: "Home Overview", badge: "PORTAL", badgeColor: "blue", iconName: "globe", href: "/" },
+    ],
+  },
+  {
     title: "PREDICTION TOOLS",
     items: [
-      { id: "wingo-30s", label: "Wingo 30 Sec Tool", badge: "30s LIVE", badgeColor: "gold", iconName: "bolt" },
-      { id: "wingo-1m", label: "Wingo 1 Min Tool", badge: "1M SYNC", badgeColor: "green", iconName: "clock" },
+      { id: "wingo-30s", label: "Wingo 30 Sec Tool", badge: "30s LIVE", badgeColor: "gold", iconName: "bolt", href: "/wingo-30s-prediction" },
+      { id: "wingo-1m", label: "Wingo 1 Min Tool", badge: "1M SYNC", badgeColor: "green", iconName: "clock", href: "/wingo-1-minute-prediction" },
     ],
   },
   {
     title: "CALCULATORS & RADAR",
     items: [
-      { id: "pattern-radar", label: "Pattern & Trend Radar", badge: "HOT", badgeColor: "gold", iconName: "radar" },
-      { id: "calculator", label: "Martingale Calculator", badge: "RISK", badgeColor: "purple", iconName: "calculator" },
+      { id: "pattern-radar", label: "Pattern & Trend Radar", badge: "HOT", badgeColor: "gold", iconName: "radar", href: "/wingo-pattern-radar" },
+      { id: "calculator", label: "Martingale Calculator", badge: "RISK", badgeColor: "purple", iconName: "calculator", href: "/wingo-calculator" },
     ],
   },
   {
     title: "DOCUMENTATION",
     items: [
-      { id: "about", label: "About & Documentation", badge: "GUIDE", badgeColor: "blue", iconName: "book" },
+      { id: "about", label: "About & Documentation", badge: "GUIDE", badgeColor: "blue", iconName: "book", href: "/about" },
     ],
   },
 ];
@@ -100,11 +108,13 @@ function SidebarComponent({
       >
         {/* Sidebar Header */}
         <div className="sidebar-header">
-          <div
+          <Link
+            href="/"
             className="sidebar-brand"
-            onClick={() => handleItemClick("wingo-30s")}
-            role="button"
-            tabIndex={0}
+            onClick={(e) => {
+              e.preventDefault();
+              handleItemClick("landing");
+            }}
           >
             <div className="sidebar-logo">
               <img
@@ -121,7 +131,7 @@ function SidebarComponent({
                 TOOLS SUITE <span className="pro-tag">PRO</span>
               </span>
             </div>
-          </div>
+          </Link>
 
           <button
             type="button"
@@ -144,9 +154,12 @@ function SidebarComponent({
                   const isActive = activeTool === item.id;
                   return (
                     <li key={item.id}>
-                      <button
-                        type="button"
-                        onClick={() => handleItemClick(item.id)}
+                      <Link
+                        href={item.href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleItemClick(item.id);
+                        }}
                         className={`sidebar-nav-item ${isActive ? "is-active" : ""}`}
                         title={isCollapsed ? item.label : undefined}
                       >
@@ -160,7 +173,7 @@ function SidebarComponent({
                           </span>
                         )}
                         {isActive && <span className="active-glow-bar" />}
-                      </button>
+                      </Link>
                     </li>
                   );
                 })}
@@ -195,4 +208,3 @@ function SidebarComponent({
 
 const Sidebar = memo(SidebarComponent);
 export default Sidebar;
-

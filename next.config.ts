@@ -30,6 +30,31 @@ const nextConfig: NextConfig = {
       },
     },
   },
+
+  async rewrites() {
+    return [
+      {
+        source: "/wingo-30s-prediction",
+        destination: "/?t=wingo-30s",
+      },
+      {
+        source: "/wingo-1-minute-prediction",
+        destination: "/?t=wingo-1m",
+      },
+      {
+        source: "/wingo-pattern-radar",
+        destination: "/?t=pattern-radar",
+      },
+      {
+        source: "/wingo-calculator",
+        destination: "/?t=calculator",
+      },
+      {
+        source: "/about",
+        destination: "/?t=about",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "WinGo 30s & 1m AI Prediction & Live Analytics Terminal | Wingo Logic",
+    default: "AI Wingo Prediction & Color Signal Analytics | Wingo Logic",
     template: "%s | Wingo Logic",
   },
   description:
@@ -50,13 +50,13 @@ export const metadata: Metadata = {
     "wingologic.com",
   ],
   alternates: {
-    canonical: "/",
+    canonical: siteUrl.replace(/\/+$/, ""),
   },
   openGraph: {
-    title: "WinGo 30s & 1m AI Prediction & Live Analytics Terminal | Wingo Logic",
+    title: "AI Wingo Prediction & Color Signal Analytics | Wingo Logic",
     description:
       "Track live WinGo 30-second and 1-minute cycles with real-time AI probability signals, high-accuracy color & size forecasts, verified round history, and risk calculators.",
-    url: siteUrl,
+    url: siteUrl.endsWith("/") ? siteUrl : `${siteUrl}/`,
     siteName: "Wingo Logic",
     images: [
       {
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WinGo 30s & 1m AI Prediction | Wingo Logic",
+    title: "AI Wingo Prediction & Color Signal Analytics | Wingo Logic",
     description:
       "Live AI probability signals, high-accuracy color and size forecasts for WinGo rapid cycles.",
     images: ["/wingo-logic-official-logo.png"],

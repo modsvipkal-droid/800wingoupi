@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ActiveTool } from "../types";
 import { Icon } from "./Icons";
 import { useAuth } from "../context/AuthContext";
@@ -12,6 +13,7 @@ interface HeaderProps {
 }
 
 function HeaderComponent({
+  activeTool,
   onSelectTool,
   onToggleSidebar,
 }: HeaderProps) {
@@ -48,10 +50,32 @@ function HeaderComponent({
     ? user.email.charAt(0).toUpperCase()
     : "U";
 
+  const navLinks = [
+    { label: "Features", href: "#features" },
+    { label: "Live Tools", href: "#live-tools" },
+    { label: "Why Us", href: "#why-us" },
+    { label: "Reviews", href: "#reviews" },
+    { label: "FAQs", href: "#faqs" },
+  ];
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    if (activeTool !== "landing") {
+      onSelectTool("landing");
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 120);
+    } else {
+      const el = document.querySelector(href);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <header className="tools-header">
-      {/* Left: Menu Toggle Button */}
-      <div className="header-left">
+      {/* Left: Menu Toggle Button & Brand Link */}
+      <div className="header-left flex items-center gap-3">
         <button
           type="button"
           className="header-menu-btn"
@@ -61,25 +85,55 @@ function HeaderComponent({
         >
           <Icon name="menu" size={22} />
         </button>
+
+        {/* Center: Wingo Logic Header Logo (Centered & Enlarged) */}
+        <Link
+          href="/"
+          className="header-logo-centered flex items-center gap-2"
+          onClick={(e) => {
+            e.preventDefault();
+            onSelectTool("landing");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          title="Wingo Logic Home"
+        >
+          <img
+            src="/wingo-logic-header-logo.png"
+            alt="Wingo Logic"
+            className="header-brand-logo-large h-9 w-auto"
+          />
+        </Link>
       </div>
 
-      {/* Center: Wingo Logic Header Logo (Centered & Enlarged) */}
-      <div
-        className="header-logo-centered"
-        onClick={() => onSelectTool("wingo-30s")}
-        role="button"
-        tabIndex={0}
-        title="Wingo Logic Home"
-      >
-        <img
-          src="/wingo-logic-header-logo.png"
-          alt="Wingo Logic"
-          className="header-brand-logo-large"
-        />
-      </div>
+      {/* Center: Desktop Navigation Links */}
+      <nav className="header-nav-center hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600">
+        {navLinks.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            onClick={(e) => handleNavClick(e, link.href)}
+            className="transition-colors hover:text-emerald-600 text-xs uppercase tracking-wider font-bold"
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
 
-      {/* Right: Profile Icon Button / User Dropdown */}
-      <div className="header-right" ref={menuRef}>
+      {/* Right: Primary CTA + Profile Icon Button / User Dropdown */}
+      <div className="header-right flex items-center gap-3" ref={menuRef}>
+        <button
+          type="button"
+          onClick={() => onSelectTool("wingo-30s")}
+          className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold transition-all shadow-sm shadow-emerald-500/20 active:scale-95"
+          title="Launch 30s Real-Time Terminal"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+          </span>
+          <span>{activeTool === "wingo-30s" ? "Signal Live" : "Launch Terminal"}</span>
+        </button>
+
         <button
           type="button"
           onClick={handleProfileClick}

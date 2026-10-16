@@ -3,9 +3,9 @@ export type ResultColor = "Green" | "Red" | "Violet";
 export type WingoMode = "30s" | "1m";
 
 export type ActiveTool =
+  | "landing"
   | "wingo-30s"
   | "wingo-1m"
-  | "wingo-extended"
   | "pattern-radar"
   | "calculator"
   | "about";
