@@ -268,10 +268,12 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
 
       {/* ===== SECTION 1: HERO (ELEGANT COLOR COMBINATION & COMPACT SPACING) ===== */}
       <section
-        className="relative border-b border-slate-200/80 overflow-hidden"
+        className="relative border-b overflow-hidden"
         style={{
-          background: "linear-gradient(180deg, #ecfdf5 0%, #f0fdf4 35%, #f8fafc 100%)",
-          borderBottom: "1px solid #e2e8f0"
+          width: "100%",
+          boxShadow: "rgba(16, 185, 129, 0.05) 0px 4px 20px -2px",
+          background: "linear-gradient(rgb(228, 253, 229) 0%, rgb(237, 252, 237) 60%, rgb(245, 245, 254) 100%)",
+          borderBottom: "1px solid rgba(16, 185, 129, 0.25)"
         }}
       >
         <div
@@ -300,7 +302,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
           {/* CTA Buttons — centered with Semantic Internal Links */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-6" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px", marginBottom: "24px", flexWrap: "wrap" }}>
             <a
-              href="/wingo-30s-prediction"
+              href="/wingo-30s-live-prediction"
               onClick={(e) => {
                 e.preventDefault();
                 onSelectTool("wingo-30s");
@@ -417,7 +419,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
             <div className="prediction-terminal-card">
 
               {/* 1. Header inside Card: WinGoPrediction PRO Console + Live */}
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid #f1f5f9" }}>
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-emerald-500/15" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid rgba(16, 185, 129, 0.18)" }}>
                 <div className="flex items-center gap-2" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   {/* Robot Head Vector SVG */}
                   <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center flex-shrink-0" style={{ width: "32px", height: "32px", borderRadius: "9999px", backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", color: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -449,10 +451,10 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
               </div>
 
               {/* 2. Target Period & Flip Clock Digital Box */}
-              <div className="prediction-subcard p-3.5 mb-3.5 flex items-center justify-between" style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "18px", padding: "14px 16px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div className="flex items-center gap-2.5" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div className="prediction-subcard p-3 sm:p-3.5 mb-3.5 flex items-center justify-between gap-2" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "18px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                   {/* Concentric Radar Target Icon */}
-                  <div className="radar-target-badge">
+                  <div className="radar-target-badge shrink-0">
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: "20px", height: "20px" }}>
                       <circle cx="12" cy="12" r="9" />
                       <circle cx="12" cy="12" r="6" />
@@ -460,15 +462,15 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                       <circle cx="12" cy="12" r="1" fill="currentColor" />
                     </svg>
                   </div>
-                  <div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5" style={{ fontSize: "10.5px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>Target Period</div>
-                    <div className="text-xs sm:text-sm font-mono font-extrabold text-slate-800" style={{ fontSize: "13.5px", fontWeight: 800, fontFamily: "monospace", color: "#1e293b" }}>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5 truncate" style={{ fontSize: "10.5px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>Target Period</div>
+                    <div className="text-xs sm:text-sm font-mono font-extrabold text-slate-800 truncate" style={{ fontSize: "13.5px", fontWeight: 800, fontFamily: "monospace", color: "#1e293b" }}>
                       {livePeriod.slice(0, 9)}...
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right" style={{ textAlign: "right" }}>
+                <div className="text-right shrink-0" style={{ textAlign: "right" }}>
                   <div className="flex items-center justify-end gap-1 text-[10px] font-semibold text-slate-400 mb-1.5" style={{ fontSize: "10.5px", color: "#94a3b8", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", marginBottom: "5px" }}>
                     <Icon name="clock" size={11} className="text-purple-500" />
                     <span>Auto Draw</span>
@@ -476,20 +478,20 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                   {/* Digital Flip Clock Tiles */}
                   <div className="flex items-center gap-1 font-mono" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                     {/* Minute Tiles */}
-                    <span className="flip-clock-tile flip-clock-tile-navy">
+                    <span className="flip-clock-tile flip-clock-tile-navy w-6 h-7 text-xs sm:w-8 sm:h-9 sm:text-sm">
                       0
                     </span>
-                    <span className="flip-clock-tile flip-clock-tile-navy">
+                    <span className="flip-clock-tile flip-clock-tile-navy w-6 h-7 text-xs sm:w-8 sm:h-9 sm:text-sm">
                       0
                     </span>
                     
                     <span className="text-purple-600 font-extrabold px-0.5 text-xs sm:text-sm" style={{ color: "#7c3aed", fontWeight: 800 }}>:</span>
                     
                     {/* Second Tiles (Dynamic Real-Time Flip) */}
-                    <span className="flip-clock-tile flip-clock-tile-purple">
+                    <span className="flip-clock-tile flip-clock-tile-purple w-6 h-7 text-xs sm:w-8 sm:h-9 sm:text-sm">
                       {Math.floor(liveSeconds / 10)}
                     </span>
-                    <span className="flip-clock-tile flip-clock-tile-purple">
+                    <span className="flip-clock-tile flip-clock-tile-purple w-6 h-7 text-xs sm:w-8 sm:h-9 sm:text-sm">
                       {liveSeconds % 10}
                     </span>
                   </div>
@@ -512,7 +514,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
 
                 <div className="grid grid-cols-12 gap-2.5" style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "10px" }}>
                   {/* Left Box: Forecast + Color Mix */}
-                  <div className="col-span-8 prediction-subcard p-3 flex items-center justify-between" style={{ gridColumn: "span 8", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div className="col-span-8 prediction-subcard p-3 flex items-center justify-between" style={{ gridColumn: "span 8", backgroundColor: "#ffffff", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "16px", padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 block mb-0.5" style={{ fontSize: "10.5px", fontWeight: 600, color: "#94a3b8", display: "block", marginBottom: "2px" }}>Forecast</span>
                       <span className="text-xl sm:text-2xl font-black text-indigo-900 tracking-tight" style={{ fontSize: "22px", fontWeight: 900, color: "#312e81", letterSpacing: "-0.02em" }}>
@@ -530,7 +532,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                   </div>
 
                   {/* Right Box: Target Num SVG Ball */}
-                  <div className="col-span-4 prediction-subcard p-3 text-center flex flex-col items-center justify-center" style={{ gridColumn: "span 4", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "10px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                  <div className="col-span-4 prediction-subcard p-3 text-center flex flex-col items-center justify-center" style={{ gridColumn: "span 4", backgroundColor: "#ffffff", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "16px", padding: "10px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                     <span className="text-[10px] font-bold text-slate-400 block mb-1" style={{ fontSize: "10px", fontWeight: 600, color: "#94a3b8", display: "block", marginBottom: "4px" }}>Target Num</span>
                     <div className="flex items-center justify-center" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "38px" }}>
                       <img
@@ -547,7 +549,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
               </div>
 
               {/* 4. Verified Past Rounds Row */}
-              <div className="prediction-subcard p-3 mb-3.5" style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "12px 14px", marginBottom: "14px" }}>
+              <div className="prediction-subcard p-3 mb-3.5" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "16px", padding: "12px 14px", marginBottom: "14px" }}>
                 <div className="flex items-center justify-between text-[11px] mb-2" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px", marginBottom: "8px" }}>
                   <span className="font-bold text-slate-700" style={{ fontWeight: 700, color: "#334155" }}>Verified Past Rounds</span>
                   <span className="font-bold text-blue-600 flex items-center gap-1" style={{ fontWeight: 700, color: "#2563eb", display: "flex", alignItems: "center", gap: "4px" }}>
@@ -744,8 +746,8 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
             style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px", width: "100%" }}
           >
             {([
-              { icon: "bolt", badge: "30s LIVE", title: "Wingo 30-Second Live Signal", desc: "Ultra-fast real-time color & Big/Small predictions with millisecond synchronization. Samples high-frequency probability clusters right before each round lock.", cta: "Launch 30s Predictor", tool: "wingo-30s", path: "/wingo-30s-prediction", accentColor: "#059669", accentBg: "#ecfdf5" },
-              { icon: "clock", badge: "1M SYNC", title: "Wingo 1-Minute Pro Analyzer", desc: "Deep period trend & history tracking powered by Markov transition weights and Bayesian regression models for lower variance trading.", cta: "Launch 1m Analyzer", tool: "wingo-1m", path: "/wingo-1-minute-prediction", accentColor: "#2563eb", accentBg: "#eff6ff" },
+              { icon: "bolt", badge: "30s LIVE", title: "Wingo 30-Second Live Signal", desc: "Ultra-fast real-time color & Big/Small predictions with millisecond synchronization. Samples high-frequency probability clusters right before each round lock.", cta: "Launch 30s Predictor", tool: "wingo-30s", path: "/wingo-30s-live-prediction", accentColor: "#059669", accentBg: "#ecfdf5" },
+              { icon: "clock", badge: "1M SYNC", title: "Wingo 1-Minute Pro Analyzer", desc: "Deep period trend & history tracking powered by Markov transition weights and Bayesian regression models for lower variance trading.", cta: "Launch 1m Analyzer", tool: "wingo-1m", path: "/wingo-1-min-live-prediction-tool", accentColor: "#2563eb", accentBg: "#eff6ff" },
               { icon: "radar", badge: "RADAR AI", title: "Pattern Radar & Streak Tracker", desc: "Visual Bead Road matrix spotting long Dragon runs, zigzag alternating parity streaks, and statistical reversal points over the last 100+ rounds.", cta: "Explore Trend Radar", tool: "pattern-radar", path: "/wingo-pattern-radar", accentColor: "#7c3aed", accentBg: "#f5f3ff" },
               { icon: "calculator", badge: "RISK CONTROL", title: "Smart Fund Management Calculator", desc: "Multi-level capital & profit planner with a disciplined 8-stage Martingale staging matrix to control drawdowns and eliminate panic bets.", cta: "Open Fund Calculator", tool: "calculator", path: "/wingo-calculator", accentColor: "#d97706", accentBg: "#fffbeb" },
             ] as const).map((feat) => (
@@ -890,7 +892,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                   <td style={{ padding: "14px 20px", fontWeight: 600, color: "#334155" }}>Direct Terminal Link</td>
                   <td style={{ padding: "14px 20px" }}>
                     <a
-                      href="/wingo-30s-prediction"
+                      href="/wingo-30s-live-prediction"
                       onClick={(e) => {
                         e.preventDefault();
                         onSelectTool("wingo-30s");
@@ -902,7 +904,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                   </td>
                   <td style={{ padding: "14px 20px" }}>
                     <a
-                      href="/wingo-1-minute-prediction"
+                      href="/wingo-1-min-live-prediction-tool"
                       onClick={(e) => {
                         e.preventDefault();
                         onSelectTool("wingo-1m");
@@ -1588,7 +1590,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                 </p>
                 {/* CTA with Semantic Internal Link */}
                 <a
-                  href="/wingo-30s-prediction"
+                  href="/wingo-30s-live-prediction"
                   onClick={(e) => {
                     e.preventDefault();
                     onSelectTool("wingo-30s");
@@ -1692,7 +1694,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
               <ul className="space-y-2.5 text-xs" style={{ display: "flex", flexDirection: "column", gap: "10px", listStyle: "none", padding: 0, margin: 0, fontSize: "12.5px" }}>
                 <li>
                   <a
-                    href="/wingo-30s-prediction"
+                    href="/wingo-30s-live-prediction"
                     onClick={(e) => {
                       e.preventDefault();
                       onSelectTool("wingo-30s");
@@ -1705,7 +1707,7 @@ export default function LandingPage({ onSelectTool }: LandingPageProps) {
                 </li>
                 <li>
                   <a
-                    href="/wingo-1-minute-prediction"
+                    href="/wingo-1-min-live-prediction-tool"
                     onClick={(e) => {
                       e.preventDefault();
                       onSelectTool("wingo-1m");

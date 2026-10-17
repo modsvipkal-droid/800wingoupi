@@ -38,8 +38,16 @@ const nextConfig: NextConfig = {
         destination: "https://wingo-logic.firebaseapp.com/__/auth/:path*",
       },
       {
+        source: "/wingo-30s-live-prediction",
+        destination: "/?t=wingo-30s",
+      },
+      {
         source: "/wingo-30s-prediction",
         destination: "/?t=wingo-30s",
+      },
+      {
+        source: "/wingo-1-min-live-prediction-tool",
+        destination: "/?t=wingo-1m",
       },
       {
         source: "/wingo-1-minute-prediction",

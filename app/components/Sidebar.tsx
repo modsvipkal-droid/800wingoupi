@@ -38,8 +38,8 @@ const navSections: NavSection[] = [
   {
     title: "PREDICTION TOOLS",
     items: [
-      { id: "wingo-30s", label: "Wingo 30 Sec Tool", badge: "30s LIVE", badgeColor: "gold", iconName: "bolt", href: "/wingo-30s-prediction" },
-      { id: "wingo-1m", label: "Wingo 1 Min Tool", badge: "1M SYNC", badgeColor: "green", iconName: "clock", href: "/wingo-1-minute-prediction" },
+      { id: "wingo-30s", label: "Wingo 30 Sec Tool", badge: "30s LIVE", badgeColor: "gold", iconName: "bolt", href: "/wingo-30s-live-prediction" },
+      { id: "wingo-1m", label: "Wingo 1 Min Tool", badge: "1M SYNC", badgeColor: "green", iconName: "clock", href: "/wingo-1-min-live-prediction-tool" },
     ],
   },
   {

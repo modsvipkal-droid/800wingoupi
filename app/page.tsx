@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AboutPage from "./components/AboutPage";
 import CalculatorTool from "./components/CalculatorTool";
 import Header from "./components/Header";
@@ -27,8 +27,8 @@ const VALID_TOOLS: ActiveTool[] = [
 
 export const TOOL_ROUTES: Record<ActiveTool, string> = {
   "landing": "/",
-  "wingo-30s": "/wingo-30s-prediction",
-  "wingo-1m": "/wingo-1-minute-prediction",
+  "wingo-30s": "/wingo-30s-live-prediction",
+  "wingo-1m": "/wingo-1-min-live-prediction-tool",
   "pattern-radar": "/wingo-pattern-radar",
   "calculator": "/wingo-calculator",
   "about": "/about",
@@ -36,7 +36,9 @@ export const TOOL_ROUTES: Record<ActiveTool, string> = {
 
 export const ROUTE_TO_TOOL: Record<string, ActiveTool> = {
   "/": "landing",
+  "/wingo-30s-live-prediction": "wingo-30s",
   "/wingo-30s-prediction": "wingo-30s",
+  "/wingo-1-min-live-prediction-tool": "wingo-1m",
   "/wingo-1-minute-prediction": "wingo-1m",
   "/wingo-pattern-radar": "pattern-radar",
   "/wingo-calculator": "calculator",
@@ -54,16 +56,16 @@ const TOOL_SEO: Record<
     canonical: "https://wingologic.com",
   },
   "wingo-30s": {
-    title: "WinGo 30s AI Prediction & Live Analytics Terminal | Wingo Logic",
+    title: "WinGo 30s Live Prediction Tool: 30-Second Signal & Chart",
     description:
-      "Track live WinGo 30-second rapid cycles with real-time AI probability signals, high-accuracy Big/Small & color forecasts, verified round history, and risk management tools.",
-    canonical: "https://wingologic.com/wingo-30s-prediction",
+      "Track real-time WinGo 30s live prediction signals, 25-second execution timing, verified 10-round history logs, and the 5-stage 1.96x multiplier chart.",
+    canonical: "https://wingologic.com/wingo-30s-live-prediction",
   },
   "wingo-1m": {
-    title: "WinGo 1 Minute AI Prediction & Trend Analysis | Wingo Logic",
+    title: "WinGo 1-Min Live Prediction Tool: Big/Small Chart & Strategy",
     description:
-      "Live 1-minute WinGo cycle prediction algorithm with real-time pattern detection, color forecasting, and dynamic probability analytics.",
-    canonical: "https://wingologic.com/wingo-1-minute-prediction",
+      "Master the WinGo 1-Min Live Prediction Tool with our 5-step signal protocol, Big/Small vs Color payout matrix, and 5-stage 1.96x fund management chart.",
+    canonical: "https://wingologic.com/wingo-1-min-live-prediction-tool",
   },
   "pattern-radar": {
     title: "WinGo Pattern & Trend Radar - Bead Road Analytics | Wingo Logic",
@@ -87,11 +89,14 @@ const TOOL_SEO: Record<
 
 function HomeInner() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const toolParam = searchParams.get("t") as ActiveTool | null;
   const initialTool: ActiveTool =
-    toolParam && VALID_TOOLS.includes(toolParam) ? toolParam : "landing";
+    (pathname && ROUTE_TO_TOOL[pathname])
+      ? ROUTE_TO_TOOL[pathname]
+      : (toolParam && VALID_TOOLS.includes(toolParam) ? toolParam : "landing");
 
   const [activeTool, setActiveTool] = useState<ActiveTool>(initialTool);
   const [sidebarOpen, setSidebarOpen] = useState(false);

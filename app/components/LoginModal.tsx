@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Icon } from "./Icons";
 import TurnstileWidget from "./TurnstileWidget";
@@ -9,6 +9,57 @@ function LoginModalContent() {
   const { closeLoginModal, loginWithGoogle, isLoggingIn, authError, setAuthError } = useAuth();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const tgsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Directly load and render login-animation.tgs client-side with pako + lottie-web
+  useEffect(() => {
+    let animInstance: any = null;
+    let isMounted = true;
+
+    async function loadLoginTgs() {
+      try {
+        const [lottieModule, pakoModule, res] = await Promise.all([
+          import("lottie-web"),
+          import("pako"),
+          fetch("/login-animation.tgs"),
+        ]);
+        if (!isMounted || !tgsContainerRef.current || !res.ok) return;
+
+        const buffer = await res.arrayBuffer();
+        const pako = pakoModule.default || pakoModule;
+        const decompressed = pako.ungzip(new Uint8Array(buffer));
+        const json = JSON.parse(new TextDecoder("utf-8").decode(decompressed));
+
+        const lottie = lottieModule.default || lottieModule;
+        tgsContainerRef.current.innerHTML = "";
+        animInstance = lottie.loadAnimation({
+          container: tgsContainerRef.current,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+          animationData: json,
+          rendererSettings: {
+            preserveAspectRatio: "xMidYMid meet",
+          },
+        });
+      } catch (e) {
+        console.warn("Login TGS animation load error:", e);
+      }
+    }
+
+    loadLoginTgs();
+
+    return () => {
+      isMounted = false;
+      if (animInstance) {
+        try {
+          animInstance.destroy();
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, []);
 
   // Close on ESC key
   useEffect(() => {
@@ -58,6 +109,9 @@ function LoginModalContent() {
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
       >
+        {/* Soft Ambient Glow Blob */}
+        <div className="login-sheet-ambient-blob" aria-hidden="true" />
+
         {/* Top Handle Bar for Sheet Aesthetics */}
         <div className="login-sheet-handle" />
 
@@ -69,23 +123,12 @@ function LoginModalContent() {
           aria-label="Close dialog"
           title="Close"
         >
-          <Icon name="x" size={18} />
+          <Icon name="x" size={15} />
         </button>
 
-        {/* Top Centered Lightning Icon in Mint Container */}
-        <div className="login-sheet-icon-wrap">
-          <svg
-            width="26"
-            height="26"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#10b981"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-          </svg>
+        {/* Top Animated Login TGS Lottie (Clearly visible) */}
+        <div className="login-sheet-tgs-wrap" title="WinGo Login Authentication">
+          <div ref={tgsContainerRef} className="login-sheet-tgs-player" />
         </div>
 
         {/* Titles */}
@@ -145,8 +188,8 @@ function LoginModalContent() {
           ) : (
             <svg
               className="google-svg-logo"
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
             >
               <path

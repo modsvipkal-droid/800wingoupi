@@ -12,13 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/wingo-30s-prediction`,
+      url: `${baseUrl}/wingo-30s-live-prediction`,
       lastModified: now,
       changeFrequency: "always",
       priority: 0.95,
     },
     {
-      url: `${baseUrl}/wingo-1-minute-prediction`,
+      url: `${baseUrl}/wingo-1-min-live-prediction-tool`,
       lastModified: now,
       changeFrequency: "always",
       priority: 0.9,
