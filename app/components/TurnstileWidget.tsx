@@ -35,7 +35,7 @@ interface TurnstileWidgetProps {
 }
 
 export default function TurnstileWidget({
-  siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAFWxxYyKrc52CKmJ",
+  siteKey,
   onSuccess,
   onExpire,
   onError,
@@ -43,48 +43,72 @@ export default function TurnstileWidget({
 }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const isMountedRef = useRef(true);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [retryTrigger, setRetryTrigger] = useState(0);
 
+  // Stable refs for callbacks to prevent infinite re-render / refresh loops
+  const onSuccessRef = useRef(onSuccess);
+  const onExpireRef = useRef(onExpire);
+  const onErrorRef = useRef(onError);
+
   useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
+
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  }, [onExpire]);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
+
+  // Guaranteed fallback site key
+  const activeSiteKey =
+    (siteKey && siteKey.trim()) ||
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+    "0x4AAAAAAFWxxYyKrc52CKmJ";
+
+  useEffect(() => {
+    isMountedRef.current = true;
     let isCancelled = false;
     let pollInterval: NodeJS.Timeout | null = null;
-
-    setHasError(false);
-    setErrorMessage(null);
+    let timeoutTimer: NodeJS.Timeout | null = null;
 
     const renderWidget = () => {
       if (isCancelled || !containerRef.current || !window.turnstile) return;
+      // Do not re-render if already rendered and widget ID exists
       if (widgetIdRef.current) return;
 
       try {
         containerRef.current.innerHTML = "";
 
         const id = window.turnstile.render(containerRef.current, {
-          sitekey: siteKey,
+          sitekey: activeSiteKey,
           theme: "light",
           size: "normal",
           "refresh-expired": "auto",
-          retry: "auto",
+          retry: "never", // Strictly disable auto-retrying in an infinite loop on failure
           callback: (token: string) => {
-            if (!isCancelled) {
+            if (!isCancelled && isMountedRef.current) {
               setHasError(false);
               setErrorMessage(null);
-              onSuccess(token);
+              onSuccessRef.current?.(token);
             }
           },
           "expired-callback": () => {
-            if (!isCancelled) {
-              onExpire?.();
+            if (!isCancelled && isMountedRef.current) {
+              onExpireRef.current?.();
             }
           },
           "error-callback": (err: unknown) => {
             console.warn("Cloudflare Turnstile challenge error:", err);
-            if (!isCancelled) {
+            if (!isCancelled && isMountedRef.current) {
               setHasError(true);
-              setErrorMessage("Security challenge could not be loaded. Please click retry.");
-              onError?.(err);
+              setErrorMessage("Security check could not be completed. Please click retry.");
+              onErrorRef.current?.(err);
             }
           },
         });
@@ -92,10 +116,10 @@ export default function TurnstileWidget({
         widgetIdRef.current = id;
       } catch (err) {
         console.warn("Turnstile render error:", err);
-        if (!isCancelled) {
+        if (!isCancelled && isMountedRef.current) {
           setHasError(true);
           setErrorMessage("Failed to initialize security challenge.");
-          onError?.(err);
+          onErrorRef.current?.(err);
         }
       }
     };
@@ -106,6 +130,7 @@ export default function TurnstileWidget({
       pollInterval = setInterval(() => {
         if (window.turnstile) {
           if (pollInterval) clearInterval(pollInterval);
+          if (timeoutTimer) clearTimeout(timeoutTimer);
           renderWidget();
         }
       }, 50);
@@ -123,14 +148,40 @@ export default function TurnstileWidget({
 
       const onScriptLoad = () => {
         if (pollInterval) clearInterval(pollInterval);
+        if (timeoutTimer) clearTimeout(timeoutTimer);
         renderWidget();
       };
+
+      const onScriptError = () => {
+        if (pollInterval) clearInterval(pollInterval);
+        if (timeoutTimer) clearTimeout(timeoutTimer);
+        if (!isCancelled && isMountedRef.current) {
+          setHasError(true);
+          setErrorMessage("Security check was blocked. Please disable ad-blockers and retry.");
+          onErrorRef.current?.(new Error("Turnstile script load failed"));
+        }
+      };
+
       script.addEventListener("load", onScriptLoad);
+      script.addEventListener("error", onScriptError);
+
+      // 10s fallback timeout if Turnstile CDN cannot be reached
+      timeoutTimer = setTimeout(() => {
+        if (!window.turnstile && !isCancelled && isMountedRef.current) {
+          if (pollInterval) clearInterval(pollInterval);
+          setHasError(true);
+          setErrorMessage("Security check timed out. Please check your internet connection.");
+          onErrorRef.current?.(new Error("Turnstile timeout"));
+        }
+      }, 10000);
 
       return () => {
         isCancelled = true;
+        isMountedRef.current = false;
         if (pollInterval) clearInterval(pollInterval);
+        if (timeoutTimer) clearTimeout(timeoutTimer);
         script?.removeEventListener("load", onScriptLoad);
+        script?.removeEventListener("error", onScriptError);
         if (widgetIdRef.current && window.turnstile?.remove) {
           try {
             window.turnstile.remove(widgetIdRef.current);
@@ -142,7 +193,9 @@ export default function TurnstileWidget({
 
     return () => {
       isCancelled = true;
+      isMountedRef.current = false;
       if (pollInterval) clearInterval(pollInterval);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
       if (widgetIdRef.current && window.turnstile?.remove) {
         try {
           window.turnstile.remove(widgetIdRef.current);
@@ -150,17 +203,25 @@ export default function TurnstileWidget({
         widgetIdRef.current = null;
       }
     };
-  }, [siteKey, retryTrigger, onSuccess, onExpire, onError]);
+  }, [activeSiteKey, retryTrigger]);
 
   const handleRetry = () => {
+    setHasError(false);
+    setErrorMessage(null);
+    if (widgetIdRef.current && window.turnstile?.reset) {
+      try {
+        window.turnstile.reset(widgetIdRef.current);
+        return;
+      } catch {
+        // Fallback to remove and re-render
+      }
+    }
     if (widgetIdRef.current && window.turnstile?.remove) {
       try {
         window.turnstile.remove(widgetIdRef.current);
       } catch {}
       widgetIdRef.current = null;
     }
-    setHasError(false);
-    setErrorMessage(null);
     setRetryTrigger((c) => c + 1);
   };
 

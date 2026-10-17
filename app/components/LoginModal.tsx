@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Icon } from "./Icons";
 import TurnstileWidget from "./TurnstileWidget";
@@ -24,6 +24,21 @@ function LoginModalContent() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [closeLoginModal]);
+
+  // Stable callbacks for Turnstile to prevent widget re-initialization
+  const handleTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setAuthError(null);
+  }, [setAuthError]);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  const handleTurnstileError = useCallback((err: unknown) => {
+    console.warn("Turnstile challenge error:", err);
+    setTurnstileToken(null);
+  }, []);
 
   // Strict validation: button is strictly disabled until BOTH Turnstile succeeds and Terms checkbox is checked
   const isVerified = Boolean(turnstileToken) && acceptedTerms;
@@ -90,17 +105,9 @@ function LoginModalContent() {
         <div className="login-sheet-turnstile-wrap">
           <TurnstileWidget
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-            onSuccess={(token) => {
-              setTurnstileToken(token);
-              setAuthError(null);
-            }}
-            onExpire={() => {
-              setTurnstileToken(null);
-            }}
-            onError={(err) => {
-              console.warn("Turnstile challenge error:", err);
-              setTurnstileToken(null);
-            }}
+            onSuccess={handleTurnstileSuccess}
+            onExpire={handleTurnstileExpire}
+            onError={handleTurnstileError}
           />
         </div>
 
