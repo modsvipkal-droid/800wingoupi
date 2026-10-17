@@ -34,6 +34,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/__/auth/:path*",
+        destination: "https://wingo-logic.firebaseapp.com/__/auth/:path*",
+      },
+      {
         source: "/wingo-30s-prediction",
         destination: "/?t=wingo-30s",
       },

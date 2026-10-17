@@ -32,6 +32,9 @@ export async function getClientAuth(): Promise<{ auth: Auth; googleProvider: Goo
     }
 
     const config = await res.json();
+    if (!config.authDomain) {
+      config.authDomain = "wingologic.com";
+    }
 
     if (getApps().length > 0) {
       clientApp = getApp();
